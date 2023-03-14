@@ -15,7 +15,7 @@ class BottomNavBar extends StatelessWidget {
                 FontAwesomeIcons.kiwiBird,
                 size: 20,
               ),
-              label: 'Database/Login'),
+              label: 'Database/Login1'),
           BottomNavigationBarItem(
               icon: Icon(
                 FontAwesomeIcons.rss,
