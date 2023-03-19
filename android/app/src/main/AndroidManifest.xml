@@ -1,5 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.fquizz.quizz">
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
    <application
         android:label="quizz"
         android:name="${applicationName}"
@@ -19,6 +21,10 @@
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
+              />
+              <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+              android:value="high_importance_channel" 
               />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

@@ -57,6 +57,7 @@ class DefaultFirebaseOptions {
     appId: '1:48602719743:android:598e178e231cf21ea833ca',
     messagingSenderId: '48602719743',
     projectId: 'flutterquizz-76af6',
+    databaseURL: 'https://flutterquizz-76af6-default-rtdb.firebaseio.com',
     storageBucket: 'flutterquizz-76af6.appspot.com',
   );
 }
