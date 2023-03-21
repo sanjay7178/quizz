@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -5,6 +6,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthService {
   final userStream = FirebaseAuth.instance.authStateChanges();
   final user = FirebaseAuth.instance.currentUser;
+  
+  String userFCMToken = "";
+
+  Future<void> getDeviceTokenToSendNotification() async {
+      final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+      final token = await _fcm.getToken();
+      userFCMToken = token.toString();
+      print("Token Value $userFCMToken");
+  }
   // Anonymous Firebase Login
   Future<void> anonLogin() async {
     try {
