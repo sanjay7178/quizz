@@ -1,3 +1,9 @@
+import 'package:quizz/services/card_picture.dart';
+import 'package:quizz/services/take_photo.dart';
+import 'package:quizz/services/dio_upload_service.dart';
+import 'package:quizz/services/http_upload_service.dart';
+import 'package:camera/camera.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'package:quizz/shared/bottom_nav.dart';
 
@@ -9,132 +15,203 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-// import 'home_page_model.dart';
-// export 'home_page_model.dart';
-// class RealScreen extends StatelessWidget {
-//   const RealScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(),
-//       // bottomNavigationBar: BottomNavBar(),
-//     );
-//   }
-// }
-
 class RealScreen extends StatefulWidget {
-  const RealScreen({Key? key}) : super(key: key);
+  RealScreen({Key? key, required this.title}) : super(key: key);
+
+  final String title;
 
   @override
   _RealScreenState createState() => _RealScreenState();
 }
 
 class _RealScreenState extends State<RealScreen> {
-  // late HomePageModel _model;
+  final HttpUploadService _httpUploadService = HttpUploadService();
+  final DioUploadService _dioUploadService = DioUploadService();
+  late CameraDescription _cameraDescription;
+  List<String> _images = [];
+  @override
+  void initState() {
+    super.initState();
+    availableCameras().then((cameras) {
+      final camera = cameras
+          .where((camera) => camera.lensDirection == CameraLensDirection.back)
+          .toList()
+          .first;
+      setState(() {
+        _cameraDescription = camera;
+      });
+    }).catchError((err) {
+      print(err);
+    });
+  }
 
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-  final _unfocusNode = FocusNode();
+  Future<void> presentAlert(BuildContext context,
+      {String title = '', String message = '', Function()? ok}) {
+    return showDialog(
+        context: context,
+        builder: (c) {
+          return AlertDialog(
+            title: Text('$title'),
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  child: Text('$message'),
+                )
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'OK',
+                  // style: greenText,
+                ),
+                onPressed: ok != null ? ok : Navigator.of(context).pop,
+              ),
+            ],
+          );
+        });
+  }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _model = createModel(context, () => HomePageModel());
-  // }
-
-  // @override
-  // void dispose() {
-  //   _model.dispose();
-
-  //   _unfocusNode.dispose();
-  //   super.dispose();
-  // }
+  void presentLoader(BuildContext context,
+      {String text = 'Aguarde...',
+      bool barrierDismissible = false,
+      bool willPop = true}) {
+    showDialog(
+        barrierDismissible: barrierDismissible,
+        context: context,
+        builder: (c) {
+          return WillPopScope(
+            onWillPop: () async {
+              return willPop;
+            },
+            child: AlertDialog(
+              content: Container(
+                child: Row(
+                  children: <Widget>[
+                    CircularProgressIndicator(),
+                    SizedBox(
+                      width: 20.0,
+                    ),
+                    Text(
+                      text,
+                      style: TextStyle(fontSize: 18.0),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: scaffoldKey,
-      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-      appBar: AppBar(
-        // backgroundColor: FlutterFlowTheme.of(context).primaryColor,
-        // automaticallyImplyLeading: true,
-        title: Text(
-          'Realtime View',
-          // style: FlutterFlowTheme.of(context).bodyText1.override(
-          //       fontFamily: 'Poppins',
-          //       color: Color(0xFFFAFEFF),
-          //       fontSize: 20,
-          //       fontWeight: FontWeight.w500,
-          //     ),
+        appBar: AppBar(
+          title: Text('Realtime View'),
         ),
-        actions: [],
-        centerTitle: false,
-        elevation: 4,
-      ),
-      body: SafeArea(
-        child: GestureDetector(
-          onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
-          child: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(130, 600, 120, 0),
-            child: FFButtonWidget(
-              onPressed: () async {
-                // final selectedMedia = await selectMediaWithSourceBottomSheet(
-                //   context: context,
-                //   allowPhoto: true,
-                // );
-                // if (selectedMedia != null &&
-                //     selectedMedia.every(
-                //         (m) => validateFileFormat(m.storagePath, context))) {
-                //   setState(() => _model.isMediaUploading = true);
-                //   var selectedUploadedFiles = <FFUploadedFile>[];
-
-                //   try {
-                //     selectedUploadedFiles = selectedMedia
-                //         .map((m) => FFUploadedFile(
-                //               name: m.storagePath.split('/').last,
-                //               bytes: m.bytes,
-                //               height: m.dimensions?.height,
-                //               width: m.dimensions?.width,
-                //             ))
-                //         .toList();
-                //   } finally {
-                //     // _model.isMediaUploading = false;
-                //   }
-                //   if (selectedUploadedFiles.length == selectedMedia.length) {
-                //     setState(() {
-                //       // _model.uploadedLocalFile = selectedUploadedFiles.first;
-                //     });
-                //   } else {
-                //     setState(() {});
-                //     return;
-                //   }
-                // }
-              },
-              text: 'Button',
-              icon: Icon(
-                Icons.add_a_photo_outlined,
-                size: 15,
-              ),
-              options: FFButtonOptions(
-                width: 130,
-                height: 40,
-                padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                iconPadding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
-                color: FlutterFlowTheme.of(context).primaryColor,
-                textStyle: FlutterFlowTheme.of(context).subtitle2.override(
-                      fontFamily: 'Poppins',
-                      color: Colors.white,
-                    ),
-                borderSide: BorderSide(
-                  color: Colors.transparent,
-                  width: 1,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+            child: Column(
+              children: [
+                Text('Send least two pictures',
+                    style: TextStyle(fontSize: 17.0)),
+                SizedBox(
+                  height: 20,
                 ),
-                // borderRadius: BorderRadius.circular(8),
-              ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  height: 400,
+                  child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: [
+                            CardPicture(
+                              onTap: () async {
+                                final String? imagePath =
+                                    await Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                            builder: (_) => TakePhoto(
+                                                  camera: _cameraDescription,
+                                                )));
+
+                                print('imagepath: $imagePath');
+                                if (imagePath != null) {
+                                  setState(() {
+                                    _images.add(imagePath);
+                                  });
+                                }
+                              },
+                            ),
+                            // CardPicture(),
+                            // CardPicture(),
+                          ] +
+                          _images
+                              .map((String path) => CardPicture(
+                                    imagePath: path,
+                                  ))
+                              .toList()),
+                ),
+                SizedBox(
+                  height: 20.0,
+                ),
+                Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  // color: Colors.indigo,
+                                  gradient: LinearGradient(colors: [
+                                    Colors.indigo,
+                                    Colors.indigo.shade800
+                                  ]),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(3.0))),
+                              child: RawMaterialButton(
+                                padding: EdgeInsets.symmetric(vertical: 12.0),
+                                onPressed: () async {
+                                  // show loader
+                                  presentLoader(context, text: 'Wait...');
+
+                                  // calling with dio
+                                  var responseDataDio = await _dioUploadService
+                                      .uploadPhotos(_images);
+
+                                  // calling with http
+                                  var responseDataHttp =
+                                      await _httpUploadService
+                                          .uploadPhotos(_images);
+
+                                  // hide loader
+                                  Navigator.of(context).pop();
+
+                                  // showing alert dialogs
+                                  await presentAlert(context,
+                                      title: 'Success Dio',
+                                      message: responseDataDio.toString());
+                                  await presentAlert(context,
+                                      title: 'Success HTTP',
+                                      message: responseDataHttp);
+                                },
+                                child: Center(
+                                    child: Text(
+                                  'SEND',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 17.0,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                              )),
+                        )
+                      ],
+                    ))
+              ],
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 }

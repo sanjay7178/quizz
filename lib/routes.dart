@@ -14,5 +14,5 @@ var appRoutes = {
   '/topics': (context) => TopicsScreen(),
   '/profile': (context) => ProfileScreen(),
   '/about': (context) => AboutScreen(),
-  '/realtime': (context) => RealScreen()
+  '/realtime': (context) => RealScreen(title: 'Realtime')
 };

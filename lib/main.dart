@@ -21,7 +21,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 String deviceTokenToSendPushNotification = "";
 
-Future<void> main() async { 
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (Platform.isIOS) {
     await Firebase.initializeApp(
@@ -116,18 +116,17 @@ class _AppState extends State<App> {
   }
 
   Future<void> getDeviceTokenToSendNotification() async {
-      final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-      final token = await _fcm.getToken();
-      deviceTokenToSendPushNotification = token.toString();
-      print("Token Value $deviceTokenToSendPushNotification");
+    final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+    final token = await _fcm.getToken();
+    deviceTokenToSendPushNotification = token.toString();
+    print("Token Value $deviceTokenToSendPushNotification");
   }
 
   @override
   Widget build(BuildContext context) {
-
     getDeviceTokenToSendNotification();
     print('Hello, World');
-    
+
     return FutureBuilder(
       // Initialize FlutterFire:
       future: _initialization,
@@ -152,9 +151,7 @@ class _AppState extends State<App> {
 
         // Otherwise, show something whilst waiting for initialization to complete
         return const MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: LoadingScreen()
-        );
+            debugShowCheckedModeBanner: false, home: LoadingScreen());
       },
     );
   }
