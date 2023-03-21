@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:quizz/about/about.dart';
-import 'package:quizz/profile/profile.dart';
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({super.key});
@@ -18,22 +16,22 @@ class BottomNavBar extends StatelessWidget {
               label: 'Database/Login1'),
           BottomNavigationBarItem(
               icon: Icon(
+                FontAwesomeIcons.camera,
+                size: 20,
+              ),
+              label: 'Realtime'),
+          BottomNavigationBarItem(
+              icon: Icon(
                 FontAwesomeIcons.rss,
                 size: 20,
               ),
               label: 'About/Feed'),
-          // BottomNavigationBarItem(
-          //     icon: Icon(
-          //       FontAwesomeIcons.freebsd,
-          //       size: 20,
-          //     ),
-          //     label: 'Feed'),
           BottomNavigationBarItem(
               icon: Icon(
                 FontAwesomeIcons.userCircle,
                 size: 20,
               ),
-              label: 'Profile ')
+              label: 'Profile '),
         ],
         fixedColor: Colors.deepPurple[200],
         onTap: (int idx) {
@@ -41,9 +39,12 @@ class BottomNavBar extends StatelessWidget {
             case 0:
               break;
             case 1:
-              Navigator.pushNamed(context, '/about');
+              Navigator.pushNamed(context, '/realtime');
               break;
             case 2:
+              Navigator.pushNamed(context, '/about');
+              break;
+            case 3:
               Navigator.pushNamed(context, '/profile');
               break;
           }
